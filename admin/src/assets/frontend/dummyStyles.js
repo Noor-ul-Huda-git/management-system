@@ -1532,3 +1532,10 @@ export const heroStyles = {
   container: "hero-container",
   title: "hero-title",
 };
+export const navbar= {
+  header: "w-full bg-white shadow-sm",
+  navContainer: "max-w-7xl mx-auto flex justify-between items-center px-4 py-3",
+  logo: "text-2xl font-bold text-emerald-600",
+  navLinks: "flex gap-6 items-center",
+  link: "text-gray-700 hover:text-emerald-600 transition"
+};
