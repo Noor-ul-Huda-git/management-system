@@ -56,10 +56,19 @@ const App = () => {
       <Route path="/add" element={<RequireAuth>
         <Add/>
       </RequireAuth>}/>
-      <Route path="/list" element={<RequireAith>
+      <Route path="/list" element={<RequireAuth>
         <List/>
-      </RequireAith>}
+      </RequireAuth>}
       />
+      <Route path="/appointments" element={<RequireAuth>
+        <Appointments/>
+      </RequireAuth>}
+      />
+       <Route path="/service-dashboard" element={<RequireAuth>
+        <SerDashboard/>
+      </RequireAuth>}
+      />
+
     </Routes>
   );
 };

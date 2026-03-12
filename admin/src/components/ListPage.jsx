@@ -125,8 +125,314 @@ const ListPage=()=>{
     fetchDoctors();
   }, []);
 
+//   to filter
+
+ const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    let list = doctors;
+    if (filterStatus === "available") {
+      list = list.filter(
+        (d) => (d.availability || "").toString().toLowerCase() === "available"
+      );
+    } else if (filterStatus === "unavailable") {
+      list = list.filter(
+        (d) => (d.availability || "").toString().toLowerCase() !== "available"
+      );
+    }
+    if (!q) return list;
+    return list.filter((d) => {
+      return (
+        (d.name || "").toLowerCase().includes(q) ||
+        (d.specialization || "").toLowerCase().includes(q)
+      );
+    });
+  }, [doctors, query, filterStatus]);
+
+//   to show doctors according to filter
+ const displayed = useMemo(() => {
+    if (showAll) return filtered;
+    return filtered.slice(0, 6);
+  }, [filtered, showAll]);
+
+  function toggle(id) {
+    setExpanded((prev) => (prev === id ? null : id));
+  }
+
+//   To delete doctors
+async function removeDoctor(id) {
+    const doc = doctors.find((d) => (d._id || d.id) === id);
+    if (!doc) return;
+    const ok = window.confirm(`Delete ${doc.name}? This cannot be undone.`);
+    if (!ok) return;
+
+    try {
+      const res = await fetch(`${API_BASE}/api/doctors/${id}`, {
+        method: "DELETE",
+      });
+      const body = await res.json().catch(() => null);
+      if (!res.ok) {
+        alert(body?.message || "Failed to delete");
+        return;
+      }
+      setDoctors((prev) => prev.filter((p) => (p._id || p.id) !== id));
+      if (expanded === id) setExpanded(null);
+    } catch (err) {
+      console.error("delete error", err);
+      alert("Network error deleting doctor");
+    }
+  }
+//   shows all doctor or filtered ones
+
+  function applyStatusFilter(status) {
+    setFilterStatus((prev) => (prev === status ? "all" : status));
+    setExpanded(null);
+    setShowAll(false);
+  }
+
+
+
+
     return(
-        <div>
+        <div className={doctorListStyles.container}>
+            <header className={doctorListStyles.headerContainer}>
+                <div className={doctorListStyles.headerTopSection}>
+                    <div className={doctorListStyles.headerIconContainer}>
+                        <div className={doctorListStyles.headerIcon}>
+                            <Users size={20} className={doxtorListStyles.headerIconSvg}/>
+
+                        </div>
+                        <div>
+                            <h1 className={doctorListStyles.headerTitle}>
+                                Find a Doctor
+                            </h1>
+                            <p className={doctorListStyles.headerSubtitle}>
+                                Search by Name or Specialization
+
+                            </p>
+
+                        </div>
+                    </div>
+                    <div className={dostorListStyles.headerSearchContainer}>
+                        <div className={dostorListStyles.searchBox}>
+                            <Search size={16} className={doctorListStyles.searchIcon}/>
+                            <input value={query} onChange={(e) => setQuery(e.target.value)}
+                            placeholder="Search Doctors, specialization"
+                            className={doctorListStyles.searchInput}/>
+
+                        </div>
+                        <button onClick={()=>{
+                            setQuery(" ");
+                            setExpanded(null);
+                            setShowAll(false);
+                            setFilteredStatus("all")}
+                        }
+                        className={doctorListStyles.clearButton}>
+                            Clear
+
+                        </button>
+
+                    </div>
+                </div>
+                <div className={dostorListStyles.filterContainer}>
+                    <button onClick={()=> applyStatusFilter("available")}
+                    className={dostorListStyles.filterButton(
+                    filterStatus ==="available",
+                    "emerald",)}>
+                    Available
+                    </button>
+                     <button onClick={()=> applyStatusFilter("unavailable")}
+                    className={dostorListStyles.filterButton(
+                    filterStatus ==="Unavailable",
+                    "red",)}>
+                    Unavailable
+                    </button>
+                </div>
+            </header>
+            <main className={dostorListStyles.gridContainer}>
+                {loading && (
+                    <div className={dostorListStyles.loadingContainer}>
+                  Loading Doctors...
+                    </div>
+                )}
+                {!loading && filtered.length===0 &&(
+                    <div className={dostorListStyles.noResultContainer}>
+                        No doctors match your Search
+
+                    </div>
+                )}
+                {displayed.map((doc)=>{
+                    const id=doc._id|| doc.id;
+                    const isOpen= expanded===id;
+                    const isAvailable=doc.availability==="Avaialble";
+                    const scheduleMap=buildScheduleMap(doc.schedule||{});
+                    const sortedDates=getSortedScheduleDates(scheduleMap);
+                    return(
+                        <article key={id} className={doctorListStyles.article}>
+                            <div className={doctorListStyles.articleContent}>
+                                <img src={doc.imageUrl|| doc.image|| " "} alt={doc.name}
+                                ClassName={doctorListStyles.doctorImage}/>
+                                <div className={doctorListStyles.doctorInfoConatiner}>
+                                    <diV className={doctorListStyles.doctorHeader}>
+                                        <div className="min-w-0 w-full">
+                                            <div className="flex items-center gap-2 flex-wrap">
+                                                <h3 className={doctorListStyles.doctorName}>
+                                                    {doc.name}
+                                                </h3>
+                                                <span className={doctorListStyles.availabilityBadge(
+                                                    isAvailable,
+                                                )}>
+                                                    <span className={doctorListStyles.availablilityDot(
+                                                        isAvailable
+                                                    )}/>
+                                                    {isAvailable?"Available" : "Unavailable"}
+
+                                                </span>
+
+                                            </div>
+                                            <div className={doctorListStyles.doctorDetails}>
+                                                {doc.specialization}.{doc.experience} years
+
+                                            </div>
+
+                                        </div>
+                                        <div className={doctorListStyles.ratingContainer}>
+                                            <div className={doctorListStyles.rating}>
+                                                <Star size={14}/>{doc.rating}
+                                           </div>
+                                           <button onClick={()=>
+                                            toggle(id)} className={doctorListStyles.toggleButton(isOpen)}
+                                           >
+                                            <EyeClosed size={18}/>
+
+                                           </button>
+
+                                        </div>
+
+                                    </diV>
+                                    <div className={doctorListStyles.statscontainer}>
+                                        <div className={doctorListStyles.statsLabel}>
+                                         Patients
+                                        </div>
+                                        <div className={doctorListStyles.statsValue}>
+                                            <Users size={14}/>
+                                            {doc.patients}
+
+                                        </div>
+                                        <div className ={doctorListStyles.actionConatiner}>
+                                            <div className="flex item-center gap-2">
+                                                <button onClick={()=>removeDoctor(id)} className={doctorListStyles.deleteButton}>
+                                                    <Trash2 size={14}/>Delete
+
+                                                </button>
+                                                <div className={doctorListStyles.feesLabel}>Fees:</div>
+                                                <div className={doctorListStyles.feesValue}>
+                                                    <BadgeIndianRupee/>{doc.fee}
+
+                                                </div>
+
+                                                
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+ <div
+                className={doctorListStyles.expandableContent}
+                style={{
+                  maxHeight: isOpen ? (isMobileScreen ? 320 : 600) : 0,
+                  transition:
+                    "max-height 420ms cubic-bezier(.2,.9,.2,1), padding 220ms ease",
+                  paddingTop: isOpen ? 16 : 0,
+                  paddingBottom: isOpen ? 16 : 0,
+                }}
+              >
+                {isOpen && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className={doctorListStyles.aboutSection}>
+                      <h4 className={doctorListStyles.aboutHeading}>About</h4>
+                      <p className={doctorListStyles.aboutText}>{doc.about}</p>
+
+                      <div className="mt-4">
+                        <div className={doctorListStyles.qualificationsHeading}>
+                          Qualifications
+                        </div>
+                        <div className={doctorListStyles.qualificationsText}>
+                          {doc.qualifications}
+                        </div>
+                      </div>
+
+                      <div className="mt-4">
+                        <div className={doctorListStyles.scheduleHeading}>
+                          Schedule
+                        </div>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {sortedDates.map((date) => {
+                            const slots = scheduleMap[date] || [];
+                            return (
+                              <div key={date} className="min-w-full md:min-w-0">
+                                <div className={doctorListStyles.scheduleDate}>
+                                  {formatDateISO(date)}
+                                </div>
+                                <div className="mt-1 flex flex-wrap gap-2">
+                                  {slots.map((s, i) => (
+                                    <span
+                                      key={i}
+                                      className={doctorListStyles.scheduleSlot}
+                                    >
+                                      {s}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+
+                    <aside className={doctorListStyles.statsSidebar}>
+                      <div className={doctorListStyles.statsItemHeading}>
+                        Success
+                      </div>
+                      <div className={doctorListStyles.statsItemValue}>
+                        {doc.success}%
+                      </div>
+
+                      <div className={doctorListStyles.statsItemHeading}>
+                        Patients
+                      </div>
+                      <div className={doctorListStyles.statsItemValue}>
+                        {doc.patients}
+                      </div>
+
+                      <div className={doctorListStyles.statsItemHeading}>
+                        Location
+                      </div>
+                      <div className={doctorListStyles.locationValue}>
+                        {doc.location}
+                      </div>
+                    </aside>
+                  </div>
+                )}
+              </div>
+               </article>
+                    )
+                })}
+                 {filtered.length>6&&(
+                    <div className={doctorListStyles.showMoreContainer}>
+                        <button onClick={()=>setShowAll((s)=>!s)}
+                        className={doctorListStyles.showMoreButton}>
+                            {showAll ? "Show Less" : `Show more(${filtered.length-4})`}
+                        </button>
+
+                    </div>
+                 )}
+            </main>
 
         </div>
     )
