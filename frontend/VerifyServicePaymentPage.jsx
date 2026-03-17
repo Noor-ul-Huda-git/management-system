@@ -1,0 +1,68 @@
+import React, { useEffect } from 'react'
+import { useLocation,useNavigate } from 'react-router-dom';
+import axios from "axios";
+
+const API_BASE="http://localhost:4000";
+
+const VerifyServicePaymentPage=()=>{
+    const location =useLocation();
+    const navigate = useNavigate();
+
+    useEffect(()=>{
+        let cancelled = false;
+
+        const VerifyPayment = async ()=>{   // ✅ name fix (same function call ke liye)
+
+            const params= new URLSearchParams(location.search || " ");
+            const sessionId= params.get("session_id");
+
+            if(location.pathname==="/service-appointment/cancel"){
+                navigate("/appointments?service_payment=Cancelled",{
+                    replace:true,
+                });
+                return; // ✅ yahan return hona chahiye
+            }
+
+            if(!sessionId){
+                if(!cancelled){
+                    navigate("/appointments?service_payment=Failed",{replace:true});
+                }
+                return;
+            }
+
+            try{
+                const res=await axios.get(
+                    `${API_BASE}/api/service-appointments/confirm`,{
+                        params:{session_id:sessionId},
+                        timeout:15000,
+                    },
+                );
+
+                if(cancelled) return;
+
+                if(res?.data?.success){
+                    navigate("/appointments?service_payment=Paid",{replace:true});
+                }else{
+                    navigate("/appointments?service_payment=Failed",{replace:true});
+                }
+
+            }catch(error){
+                console.error( "Payment verification Failed:",error);
+                if(!cancelled){
+                    navigate("/appointments?service_payment=Failed",{replace:true});
+                }
+            }
+        };
+
+        VerifyServicePayment();
+
+        return ()=>{
+            cancelled=true;
+        };
+
+    },[location,navigate]);
+
+    return null;
+}
+
+export default VerifyServicePaymentPage;
