@@ -68,7 +68,19 @@ const App = () => {
         <SerDashboard/>
       </RequireAuth>}
       />
+       <Route path="/add-service" element={<RequireAuth>
+        <AddSer/>
+      </RequireAuth>}
+      />
+       <Route path="/list-service" element={<RequireAuth>
+        <ListService/>
+      </RequireAuth>}
+      />
 
+ <Route path="/service-appointments" element={<RequireAuth>
+        <serviceappointments/>
+      </RequireAuth>}
+      />
     </Routes>
   );
 };
