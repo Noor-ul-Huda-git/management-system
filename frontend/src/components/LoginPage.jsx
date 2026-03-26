@@ -4,6 +4,7 @@ import logo from '../assets/frontend/logo.png';
 import { useNavigate } from 'react-router-dom';
 import  toast, {Toaster} from "react-hot-toast";
 import {ArrowLeft} from "lucide-react";
+import { Docters } from '../pages/Doctors';
 
 const STORAGE_KEY="doctorToken_v1";
 

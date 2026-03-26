@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
-import Doctor from "./pages/Doctors";
+import Doctors from "./pages/Doctors";
 import DoctorDetail from "./pages/DoctorDetails";
 import Service from "./pages/Service";
 import ServiceDetailPage from "./pages/ServiceDetailPage";
@@ -12,9 +12,10 @@ import List from "./doctor/List";
 import Navbar from "./components/Navbar";
 import EditProfile from "./doctor/EditProfile";
 import Appointments from "./pages/Appointments";
-import {CirclechevronUp} from "lucide-react";
-import VerifyPaymentPage from "./VerifyPaymentPage";
-import VerifyServicePaymentPage from "../VerifyServicePaymentPage";
+import { CircleChevronUp } from "lucide-react";
+import VerifyPaymentPage from "./pages/VerifyPaymentPage";
+import VerifyServicePaymentPage from "./pages/VerifyServicePaymentPage";
+
 const ScrollToTop=()=>{
   const {pathname} = useLocation();
   useEffect(()=>{
@@ -66,11 +67,11 @@ const App = () => {
   return (
     <>
       <ScrollToTop/>
-      <div claasName="overflow-x-hidden bg-white text-gray-900">
+      <div className="overflow-x-hidden bg-white text-gray-900">
       <Routes>
         <Route path="/" element={<Home />} />
            <Route path="/doctors" element={<Doctors />} />
-           <Route path="/doctors/:id" element={<Doctordetail />} />
+           <Route path="/doctors/:id" element={<DoctorDetail />} />
            <Route path="/services" element={<Service />} />
            <Route path="/appointments" element={<Appointments />} />
             <Route path="/services/:id" element={<ServiceDetailPage />} />
@@ -91,5 +92,7 @@ const App = () => {
     </>
   );
 };
+
+
 
 export default App;

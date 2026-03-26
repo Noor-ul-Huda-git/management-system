@@ -1528,3 +1528,9 @@ export const dashboardStyles = {
   saveButton: "text-xs px-3 py-2 rounded-full bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition",
   cancelButton: "text-xs px-3 py-2 rounded-full border border-emerald-200 bg-white text-emerald-800 hover:shadow-sm transition"
 };
+
+export const homeDoctorStyles = {
+  container: "p-4",
+  title: "text-2xl font-bold text-emerald-900",
+  card: "bg-white p-4 rounded-xl shadow",
+};

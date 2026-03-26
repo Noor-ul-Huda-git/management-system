@@ -1,11 +1,24 @@
-import React, { Activity } from 'react'
-import {footerStyles} from '../assets/frontend/dummyStyles';
-import logo from '../assets/frontend/png';
-import { Stethoscope,Activity,ArrowRight,Facebook,Instagram,Linkdin,
-    Mail,MapPin,Phone,Send,Twitter,Youtube
- } from 'lucide-react';
+import React from 'react'; // only React here
+import { footerStyles } from '../assets/frontend/dummyStyles';
+import logo from '../assets/frontend/logo.png';
+import ListPage from '../doctor/List';  
 
-const footer=()=>{
+import {
+  Stethoscope,
+  Activity,
+  ArrowRight,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Mail,
+  MapPin,
+  Phone,
+  Send,
+  Twitter,
+  Youtube
+} from 'lucide-react';
+
+const Footer=()=>{
     const currentYear = new Date().getFullYear();
     const quickLinks = [
   { name: "Home", href: "/" },

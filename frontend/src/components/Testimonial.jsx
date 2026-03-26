@@ -1,10 +1,12 @@
-import React from 'react'
-import { testimonialStyles } from '../assets/frontend/dummyStyles';
-const Testimonial =() =>{
-       const scrollRefLeft = useRef(null);
+import React, { useState, useEffect, useRef } from "react";
+import { testimonialStyles } from "../assets/frontend/dummyStyles";
+import { Star } from "lucide-react";
+
+const Testimonial = () => {
+  const scrollRefLeft = useRef(null);
   const scrollRefRight = useRef(null);
   const [isPaused, setIsPaused] = useState(false);
-  
+
   const testimonials = [
     {
       id: 1,
@@ -71,34 +73,35 @@ const Testimonial =() =>{
   const leftTestimonials = testimonials.filter((t) => t.type === "doctor");
   const rightTestimonials = testimonials.filter((t) => t.type === "patient");
 
+  // 🔥 Auto scroll logic
   useEffect(() => {
-    const scrollLeft = scrollRefLeft.current;
-    const scrollRight = scrollRefRight.current;
-    if (!scrollLeft || !scrollRight) return;
+    const left = scrollRefLeft.current;
+    const right = scrollRefRight.current;
+    if (!left || !right) return;
 
-    let scrollSpeed = 0.5; // preserved animation speed
+    let speed = 0.5;
     let rafId;
 
-    const smoothScroll = () => {
+    const scroll = () => {
       if (!isPaused) {
-        scrollLeft.scrollTop += scrollSpeed;
-        scrollRight.scrollTop -= scrollSpeed;
+        left.scrollTop += speed;
+        right.scrollTop -= speed;
 
-        // seamless infinite loop
-        if (scrollLeft.scrollTop >= scrollLeft.scrollHeight / 2) {
-          scrollLeft.scrollTop = 0;
+        if (left.scrollTop >= left.scrollHeight / 2) {
+          left.scrollTop = 0;
         }
-        if (scrollRight.scrollTop <= 0) {
-          scrollRight.scrollTop = scrollRight.scrollHeight / 2;
+        if (right.scrollTop <= 0) {
+          right.scrollTop = right.scrollHeight / 2;
         }
       }
-      rafId = requestAnimationFrame(smoothScroll);
+      rafId = requestAnimationFrame(scroll);
     };
 
-    rafId = requestAnimationFrame(smoothScroll);
+    rafId = requestAnimationFrame(scroll);
     return () => cancelAnimationFrame(rafId);
   }, [isPaused]);
 
+  // ⭐ Stars renderer
   const renderStars = (rating) =>
     Array.from({ length: 5 }, (_, i) => (
       <span
@@ -113,6 +116,7 @@ const Testimonial =() =>{
       </span>
     ));
 
+  // 🧩 Card Component
   const TestimonialCard = ({ testimonial, direction }) => (
     <div
       className={`${testimonialStyles.testimonialCard} ${
@@ -127,6 +131,7 @@ const Testimonial =() =>{
           alt={testimonial.name}
           className={testimonialStyles.avatar}
         />
+
         <div className={testimonialStyles.textContainer}>
           <div className={testimonialStyles.nameRoleContainer}>
             <div>
@@ -139,16 +144,20 @@ const Testimonial =() =>{
               >
                 {testimonial.name}
               </h4>
-              <p className={testimonialStyles.role}>{testimonial.role}</p>
+              <p className={testimonialStyles.role}>
+                {testimonial.role}
+              </p>
             </div>
+
             <div className={testimonialStyles.starsContainer}>
               {renderStars(testimonial.rating)}
             </div>
           </div>
 
-          <p className={testimonialStyles.quote}>"{testimonial.text}"</p>
+          <p className={testimonialStyles.quote}>
+            "{testimonial.text}"
+          </p>
 
-          {/* Stars on small screens beneath text */}
           <div className={testimonialStyles.mobileStarsContainer}>
             {renderStars(testimonial.rating)}
           </div>
@@ -156,62 +165,85 @@ const Testimonial =() =>{
       </div>
     </div>
   );
-    return(
-        <div className={testimonialStyles.Container}>
-            <div className={testimonialStyles.headerContainer}>
-                <h2 className={testimonialStyles.title}>
-                    Voices of Trust
 
-                </h2>
-                <p className={testimonialStyles.subtitle}>
-                    Real stories from doctors and patients sharing their positive
-                    experiences with out healthcare platform.
+  return (
+    <div className={testimonialStyles.container}>
+      
+      {/* Header */}
+      <div className={testimonialStyles.headerContainer}>
+        <h2 className={testimonialStyles.title}>
+          Voices of Trust
+        </h2>
+        <p className={testimonialStyles.subtitle}>
+          Real stories from doctors and patients sharing their positive
+          experiences with our healthcare platform.
+        </p>
+      </div>
 
-                </p>
+      {/* Grid */}
+      <div
+        className={testimonialStyles.grid}
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
+        
+        {/* LEFT SIDE */}
+        <div
+          className={`${testimonialStyles.columnContainer} ${testimonialStyles.leftColumnBorder}`}
+        >
+          <div
+            className={`${testimonialStyles.columnHeader} ${testimonialStyles.leftColumnHeader}`}
+          >
+            👩‍⚕️ Medical Professionals
+          </div>
 
-            </div>
-            <div className={testimonialStyles.grid}
-             onMouseEnter={()=>setIsPaused(true)}
-                onMouseLeave={()=>setIsPaused(false)}>
-                    <div className={`${testimonialStyles.columnContainer} ${testimonialStyles.leftColumnBorder
-
-                    }`}>
-                        <div className={`${testimonialStyles.columnHeader} ${testimonialStyles.leftColumnHeader}`}>
-                             👩‍⚕️ Medical Professionals
-                        </div>
-                        <div onTouchStart={()=>setIsPaused(true)} 
-                        onTouchEnd={()=>(false)}
-                        ref={scrollRefLeft} className={testimonialStyles.scrollContainer} >
-                            {[...leftTestimonialss,,,leftTestimonials].map((t,i)=>(
-                                <TestimonialCard key={`l-${i}`} testimonial={t} direction="left"/>
-                            ))}
-
-                        </div>
-
-
-
-
-                    </div>
-                    <div className={`${testimonialStyles.columnContainer} ${testimonialStyles.rightColumnBorder}`}>
-                        <div  className={`${testimonialStyles.columnHeader} ${testimonialStyles.rightColumnHeader}`}>
-                              🧑‍💼 Patients
-
-                        </div>
-                        <div ref={scrollRefRight} className={testimonialStyles.scrollContainer}
-                        onTouchStart={()=>setIsPaused(true)}
-                        onTouchEnd={()=>setIsPaused(false)}>
-                            {[...rightTestimonials,rightTestimonials].map((t,i)=>(
-                                <TestimonialCard key={`R-${i}`} testimonial={t} direction="right"/>
-
-                            ))}
-
-                        </div>
-
-                    </div>
-
-            </div>
-            <style>{testimonialStyles.animationStyles}</style>
+          <div
+            ref={scrollRefLeft}
+            className={testimonialStyles.scrollContainer}
+            onTouchStart={() => setIsPaused(true)}
+            onTouchEnd={() => setIsPaused(false)}
+          >
+            {[...leftTestimonials, ...leftTestimonials].map((t, i) => (
+              <TestimonialCard
+                key={`l-${i}`}
+                testimonial={t}
+                direction="left"
+              />
+            ))}
+          </div>
         </div>
-    );
+
+        {/* RIGHT SIDE */}
+        <div
+          className={`${testimonialStyles.columnContainer} ${testimonialStyles.rightColumnBorder}`}
+        >
+          <div
+            className={`${testimonialStyles.columnHeader} ${testimonialStyles.rightColumnHeader}`}
+          >
+            🧑‍💼 Patients
+          </div>
+
+          <div
+            ref={scrollRefRight}
+            className={testimonialStyles.scrollContainer}
+            onTouchStart={() => setIsPaused(true)}
+            onTouchEnd={() => setIsPaused(false)}
+          >
+            {[...rightTestimonials, ...rightTestimonials].map((t, i) => (
+              <TestimonialCard
+                key={`r-${i}`}
+                testimonial={t}
+                direction="right"
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Animation CSS */}
+      <style>{testimonialStyles.animationStyles}</style>
+    </div>
+  );
 };
+
 export default Testimonial;
