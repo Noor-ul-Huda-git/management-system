@@ -15,7 +15,9 @@ const app = express();
 const port = 4000;
 
 // ✅ Debug (check env working)
-console.log("CLERK KEY:", process.env.CLERK_PUBLISHABLE_KEY);
+// console.log("CLERK KEY:", process.env.CLERK_PUBLISHABLE_KEY);
+console.log("CLERK SECRET:", process.env.CLERK_SECRET_KEY);
+
 
 // Allowed origins
 const allowedOrigins = [
@@ -56,11 +58,14 @@ app.use(express.urlencoded({ limit: "20mb", extended: true }));
 // DB Connection
 connectDB();
 
+
+
 // Routes
 app.use("/api/doctors", doctorRouter);
 app.use("/api/services", serviceRouter);
 app.use("/api/appointment", appointmentRouter);
 app.use("/api/service-appointments", serviceAppointmentRouter);
+
 
 // Test Route
 app.get("/", (req, res) => {

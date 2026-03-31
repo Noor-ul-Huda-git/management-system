@@ -1,14 +1,13 @@
 import React, {useRef,useState} from 'react';
 import { useLocation, useNavigate, Link } from "react-router-dom";
 
-import{SignIn, useClerk} from "@clerk/clerk-react";
-import { navbarStyles } from "../assets/frontend/dummyStyles.js";
+import{SignedIn, useClerk,SignedOut,UserButton} from "@clerk/clerk-react";
+import { navbarStyles,navbarStylesDr } from "../assets/frontend/dummyStyles.js";
 
 
 import logo from "../assets/frontend/logo.png";
 
 import { Menu, X, User, Key } from "lucide-react";
-import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 
 
 const STORAGE_KEY = "doctorToken_v1";
@@ -45,7 +44,7 @@ const Navbar=()=>{
         <div className={navbarStyles.contentwrapper }>
             <div className={navbarStyles.flexContainer}>
                 {/* Logo*/}
-                <Link to='/' className={navbarStyles.logoLink}>
+                <Link to="/" className={navbarStyles.logoLink}>
                 <div className={navbarStyles.logoContainer}>
                     <div className={navbarStyles.logoImageWrapper}>
                         <img src={logo} alt="logo" className={navbarStyles.logoImage}/>
@@ -66,8 +65,8 @@ const Navbar=()=>{
                         {navItems.map((item)=>{
                              const isActive=location.pathname===item.href;
                              return (
-                                <Link key={item.href} to={item.href} className={`${navbarStyles.navbarItem}${
-                                    isActive ?navbarStyles.navItemActive:navbarStyles.navItemInactive
+                                <Link key={item.href} to={item.href} className={`${navbarStyles.navItem}${
+                                    isActive ? navbarStyles.navItemActive:navbarStyles.navItemInactive
                                 }`}>
                                     {item.label}
 
@@ -111,14 +110,14 @@ const Navbar=()=>{
             </div>
             {/* {mobile navigations} */}
             {isOpen &&(
-                <div className={navbarStyles.MobileMenu}>
+                <div className={navbarStyles.mobileMenu}>
                     {navItems.map((item,idx)=>{
                         const isActive=location.pathname===item.href;
                         return(
                             <Link key={idx} to={item.href}
                             onClick={()=>setIsOpen(false)}
                             className={`${navbarStyles.mobileMenuItem}${isActive ?
-                                navbarStyles.mobilemenuItemActive:navbarStyles.mobileMenuItemInactive
+                                navbarStyles.mobileMenuItemActive:navbarStyles.mobileMenuItemInactive
                             }`}>
                                 {item.label}
                                  </Link>
@@ -126,14 +125,14 @@ const Navbar=()=>{
                     })}
                     <SignedOut>
                         <Link to='/doctor-admin/login'
-                         className={navbarStyles.mobileDoctoradminButton}
+                         className={navbarStyles.mobileDoctorAdminButton}
                          onClick={()=>setIsOpen(false)}>
                             Doctor Admin 
                         </Link>
                         <div className={navbarStyles.mobileLoginContainer}>
                             <button onClick={()=>{
                                 setIsOpen(false);
-                                clerk.openSignIn()
+                                clerk.openSignIn();
                             }} className={navbarStyles.mobileLoginButton}>
                                 Login
                             </button>

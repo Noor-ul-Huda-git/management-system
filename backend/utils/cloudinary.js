@@ -25,7 +25,7 @@ export  async function uploadToCloudinary(filePath,folder="Doctor"){
         }
     }
 
-    // to delete an image that is present in cloudinary 
+    // to delete an image that is present in cloudinary if user removes from UI
     export async function deleteFromCloudinary(publicID){
         try{
             if(!publicId) return;
