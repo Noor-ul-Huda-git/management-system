@@ -33,7 +33,6 @@ const services = [
   { name: "Blood Sugar Test", href: "/services" },
   { name: "Full Blood Count", href: "/services" },
   { name: "X-Ray Scan", href: "/services" },
-  { name: "Blood Sugar Test", href: "/services" },
 ];
 
 const socialLinks = [

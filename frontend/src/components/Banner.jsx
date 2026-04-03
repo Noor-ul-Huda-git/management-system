@@ -12,8 +12,8 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-// ✅ FIX: correct image import (change path if needed)
-import bannerImg from "../assets/frontend/banner.png";
+
+import banner from "../assets/frontend/banner.png";
 
 const Banner = () => {
   const navigate = useNavigate();
@@ -21,6 +21,10 @@ const Banner = () => {
   return (
     <div className={bannerStyles.bannerContainer}>
       <div className={bannerStyles.mainContainer}>
+        <div className={bannerStyles.borderOutline}>
+          <div className={bannerStyles.outerAnimatedBand}></div>
+          <div className={bannerStyles.innerWhiteBorder}></div>
+          </div>
         
         <div className={bannerStyles.contentContainer}>
           <div className={bannerStyles.flexContainer}>
@@ -30,8 +34,10 @@ const Banner = () => {
               
               {/* TITLE */}
               <div className={bannerStyles.headerBadgeContainer}>
-                <div className={bannerStyles.stethoscopeContainer}>
+                <div className={bannerStyles.stethoscopeContainer}> 
+                  <div className={bannerStyles.stethoscopeInner}>
                   <Stethoscope className={bannerStyles.stethoscopeIcon} />
+                </div>
                 </div>
 
                 <div className={bannerStyles.titleContainer}>
@@ -44,14 +50,15 @@ const Banner = () => {
 
                   {/* STARS */}
                   <div className={bannerStyles.starsContainer}>
+                    <div className={bannerStyles.starsInner}>
                     {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        className={bannerStyles.starIcon}
+                      <Star className={bannerStyles.starIcon}
+                      key={star}
                       />
                     ))}
                   </div>
                 </div>
+              </div>
               </div>
 
               {/* TAGLINE */}
@@ -64,24 +71,26 @@ const Banner = () => {
 
               {/* FEATURES */}
               <div className={bannerStyles.featuresGrid}>
-                <div className={bannerStyles.featureItem}>
+                <div className={`${bannerStyles.featureItem} ${bannerStyles.featureBorderGreen}`}>
+              
                   <Ribbon className={bannerStyles.featureIcon} />
-                  <span>Certified Specialists</span>
+                  <span className={bannerStyles.featureText}> Certified Specialists</span>
                 </div>
 
-                <div className={bannerStyles.featureItem}>
-                  <Clock className={bannerStyles.featureIcon} />
-                  <span>24/7 Availability</span>
+                <div className={`${bannerStyles.featureItem} ${bannerStyles.featureBorderBlue}`}>
+                   <Clock className={bannerStyles.featureIcon} />
+                  <span className={bannerStyles.featureText}>
+                  24/7 Availability</span>
                 </div>
 
-                <div className={bannerStyles.featureItem}>
+                <div className={`${bannerStyles.featureItem} ${bannerStyles.featureBorderEmerald}`}>
                   <ShieldUser className={bannerStyles.featureIcon} />
-                  <span>Safe & Secure</span>
+                  <span  className={bannerStyles.featureText}>Safe & Secure</span>
                 </div>
 
-                <div className={bannerStyles.featureItem}>
+                <div className={`${bannerStyles.featureItem} ${bannerStyles.featureBorderPurple}`}>
                   <Users className={bannerStyles.featureIcon} />
-                  <span>500+ Doctors</span>
+                  <span className={bannerStyles.featureText}>500+ Doctors</span>
                 </div>
               </div>
 
@@ -92,18 +101,29 @@ const Banner = () => {
                   onClick={() => navigate("/doctors")}
                   className={bannerStyles.bookButton}
                 >
+                  <div classNme={bannerStyles.bookButtonOverlay}></div>
+                  <div className={bannerStyles.bookButtonContent}>
                   <Calendar className={bannerStyles.bookButtonIcon} />
-                  Book Appointment Now
+                  <span>
+                    Book Appointment Now
+                  </span>
+                  </div>
+                 
                 </button>
 
                 <button
                   onClick={() =>
                     (window.location.href = "tel:123456789")
                   }
-                  className={bannerStyles.emergencyNumber}
+                  className={bannerStyles.emergencyButton}
                 >
-                  <Phone className={bannerStyles.emergencyButtonIcon} />
-                  Emergency Call
+                  <div className={bannerStyles.emergencyButtonContent}>
+                    <Phone className ={bannerStyles.emergencyButtonIcon}/>
+                    <span>Emeregency Call</span>
+
+                  </div>
+                  
+                
                 </button>
 
               </div>
@@ -111,11 +131,14 @@ const Banner = () => {
 
             {/* RIGHT IMAGE */}
             <div className={bannerStyles.rightImageSection}>
-              <img
-                src={bannerImg}
-                alt="banner"
-                className={bannerStyles.image}
-              />
+              <div className={bannerStyles.imageContainer}>
+                <div className={bannerStyles.imageFrame}>
+                  <img src={banner} alt="banner " className={bannerStyles.image}/>
+                  
+                </div> 
+
+              </div>
+              
             </div>
 
           </div>
