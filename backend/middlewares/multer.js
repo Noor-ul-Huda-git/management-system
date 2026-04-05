@@ -1,6 +1,6 @@
 import multer from "multer";
-import path from "path";
-import fs from "fs";
+import path from 'path';
+import fs from 'fs'; 
 
 const uploadDir = "uploads";
 
@@ -12,7 +12,7 @@ if (!fs.existsSync(uploadDir)) {
 // multer setup
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, uploadDir);
+    cb(null, uploadDir);    
   },
   filename: function (req, file, cb) {
     const uniqueName =
@@ -21,7 +21,7 @@ const storage = multer.diskStorage({
   },
 });
 
-// file filter
+// file filter  
 const fileFilter = (req, file, cb) => {
   if (
     file.mimetype === "image/png" ||

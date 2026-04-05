@@ -101,7 +101,7 @@ const Banner = () => {
                   onClick={() => navigate("/doctors")}
                   className={bannerStyles.bookButton}
                 >
-                  <div classNme={bannerStyles.bookButtonOverlay}></div>
+                  <div className={bannerStyles.bookButtonOverlay}></div>
                   <div className={bannerStyles.bookButtonContent}>
                   <Calendar className={bannerStyles.bookButtonIcon} />
                   <span>

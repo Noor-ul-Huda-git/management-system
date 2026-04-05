@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config(); // ✅ MUST be at top
+dotenv.config(); 
 
 import express from "express";
 import cors from "cors";
@@ -14,7 +14,7 @@ import serviceAppointmentRouter from "./routes/serviceAppointmentRouter.js";
 const app = express();
 const port = 4000;
 
-// ✅ Debug (check env working)
+
 // console.log("CLERK KEY:", process.env.CLERK_PUBLISHABLE_KEY);
 console.log("CLERK SECRET:", process.env.CLERK_SECRET_KEY);
 

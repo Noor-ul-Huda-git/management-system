@@ -80,7 +80,7 @@ export async function createDoctor(req, res) {
     }
 
     let imageUrl = body.imageUrl || null;
-    let imagePublicId = body.imagePublicId || null;
+    let imagePublicId = body.imagePublicId || null; 
 
     if (req.file?.path) {
       const uploaded = await uploadToCloudinary(req.file.path, "doctors");

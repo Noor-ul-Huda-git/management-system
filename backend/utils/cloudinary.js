@@ -29,7 +29,7 @@ export  async function uploadToCloudinary(filePath,folder="Doctor"){
     export async function deleteFromCloudinary(publicID){
         try{
             if(!publicId) return;
-            await cloudinary.iploader.destroy(publicID);
+            await cloudinary.uploader.destroy(publicID);
 
         }
         catch(err){
