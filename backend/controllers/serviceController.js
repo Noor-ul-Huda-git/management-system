@@ -1,7 +1,7 @@
 import Service from "../models/Service.js";
 import {uploadToCloudinary,deleteFromCloudinary} from "../utils/cloudinary.js";
 // Helpers Function
-const parseJsonArrayField = (field) => {
+export const parseJsonArrayField = (field) => {
   if (!field) return [];
   if (Array.isArray(field)) return field;
   if (typeof field === "string") {
@@ -101,7 +101,7 @@ export async function getServices(req,res){
     try{
         const list=await Service.find().sort({createdAt:-1}).lean();
         return res.status(200).json({
-            sucess:false,
+            sucess:true,
             data:list
         });
     }
