@@ -15,6 +15,7 @@ import Appointments from "./pages/Appointments";
 import { CircleChevronUp } from "lucide-react";
 import VerifyPaymentPage from "./pages/VerifyPaymentPage";
 import VerifyServicePaymentPage from "./pages/VerifyServicePaymentPage";
+import AppointmentPage from "./components/AppointmentPage";
 
 const ScrollToTop=()=>{
   const {pathname} = useLocation();
@@ -73,7 +74,7 @@ const App = () => {
            <Route path="/doctors" element={<Doctors />} />
            <Route path="/doctors/:id" element={<DoctorDetail />} />
            <Route path="/services" element={<Service />} />
-           <Route path="/appointments" element={<Appointments />} />
+            <Route path="/appointments" element={<Appointments />} />
             <Route path="/services/:id" element={<ServiceDetailPage />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/doctor-admin/login" element={<Login />} />

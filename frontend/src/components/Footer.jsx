@@ -107,7 +107,7 @@ const socialLinks = [
                         <div className={footerStyles.contactContainer}>
                             <div className={footerStyles.contactItem}>
                                 <div className={footerStyles.contactIconWrapper}>
-                                    <phone className={footerStyles.contactIcon}/>
+                                    <Phone className={footerStyles.contactIcon}/>
 
                                 </div>
                                 <span className={footerStyles.contactText}>
