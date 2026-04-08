@@ -1,17 +1,19 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import DashboardPage from '../doctor/DashboardPage';
-const DoctorsPage = () => {
+import Doctorspage  from '../components/Doctorspage';
+
+const Doctors = () => {
+
   return (
     <div>
       <Navbar />
       {/* <Doctors />   yahan actual component use karo */}
       {/* <h1>hello and welcome to doctor page and its running</h1> */}
-      <DashboardPage/>
+      <Doctorspage/>
       <Footer />
     </div>
   );
 };
 
-export default DoctorsPage;
+export default Doctors;

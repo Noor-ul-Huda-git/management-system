@@ -256,8 +256,8 @@ const socialLinks = [
                         <span>
                             Designed By
                         </span>
-                        <a href="https://www.hexagondigitalservices.com" target="_blank" className={footerStyles.designerLink}>
-                        Hexagon Digital Services
+                        <a href="https://www.elaanmarketing.com/" target="_blank" className={footerStyles.designerLink}>
+                       House of Elaan
                         </a>
 
                     </div>
