@@ -1,6 +1,6 @@
-import React from ' react'
+import React from 'react'
 import Navbar from '../components/Navbar'
-const AddSer=()=>{
+const AddService=()=>{
     return(
         <div>
           <Navbar/>
@@ -9,4 +9,4 @@ const AddSer=()=>{
         </div>
     )
 }
-export default AddService
+export default AddService;
