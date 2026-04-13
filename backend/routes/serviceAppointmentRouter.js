@@ -3,7 +3,7 @@ import { clerkMiddleware, requireAuth } from "@clerk/express";
 
 import {
   createServiceAppointment,
-  confirmservicepayment,
+  confirmServicePayment,
   getServiceAppoitments,
   getServiceAppointmentById,
   cancelServiceAppointment,
@@ -14,7 +14,7 @@ import {
 const serviceAppointmentRouter = express.Router();
 
 serviceAppointmentRouter.get("/", getServiceAppoitments);
-serviceAppointmentRouter.get("/confirm", confirmservicepayment);
+serviceAppointmentRouter.get("/confirm", confirmServicePayment);
 serviceAppointmentRouter.get("/stats/summary", getServiceAppointmentStats);
 
 serviceAppointmentRouter.post("/", clerkMiddleware(), requireAuth(), createServiceAppointment);

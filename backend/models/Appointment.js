@@ -5,10 +5,12 @@ const appointmentSchema = new mongoose.Schema({
     },
     createdBy:{type:String,default:null,index:true},
     // patient info
+
       patientName: { type: String, required: true, trim: true },
     mobile: { type: String, required: true, trim: true },
     age: { type: Number, default: null },
     gender: { type: String, default: "" },
+    // doctor info
 
     doctorId: {
       type: mongoose.Schema.Types.ObjectId,

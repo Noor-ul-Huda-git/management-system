@@ -47,6 +47,6 @@ export default async function doctorAuth(req, res, next) {
     return res.status(401).json({
       success: false,
       message: "Token invalid or expired",
-    });
+    })
   }
 }

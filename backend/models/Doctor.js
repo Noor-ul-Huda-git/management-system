@@ -39,6 +39,6 @@ rating: { type: Number, default: 0 },
 }
     
 );
-doctorSchema.index({name:"text",specialization:"text"});
-const Doctor=mongoose.models.Doctor|| mongoose.model("Doctor",doctorSchema);
+doctorSchema.index({name:"text", specialization:"text"});
+const Doctor = mongoose.models.Doctor|| mongoose.model("Doctor",doctorSchema);
 export default Doctor;

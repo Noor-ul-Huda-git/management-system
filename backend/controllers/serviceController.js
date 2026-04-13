@@ -97,28 +97,29 @@ export async function createService(req,res){
     }
 }
 // get All the services
-export async function getServices(req,res){
-    try{
-        const list=await Service.find().sort({createdAt:-1}).lean();
-        return res.status(200).json({
-            sucess:false,
-            data:list
-        });
-    }
-    catch(err){
-        console.error("CreateService Error:",err);
-        return res.status(500).json({
-            success:false,
-            message:"Server Error"
-        });
-    }
-    
+export async function getServices(req, res) {
+  try {
+    const list = await Service.find().sort({ createdAt: -1 }).lean();
+
+    return res.status(200).json({
+      success: true,
+      data: list
+    });
+
+  } catch (err) {
+    console.error("GetServices Error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error"
+    });
+  }
 }
+
 // to get service by Id
 export async function getServiceById(req,res){
     try{
         const{id}=req.params;
-        const service= await service.findById(id).lean();
+        const service= await Service.findById(id).lean();
         if(!service) return res.status(404).json({
             success:false,
             message:"Service Not Found"
@@ -128,7 +129,7 @@ export async function getServiceById(req,res){
             data:service
         });
     }
-    catch(err){ console.error("GetService Error:",err);
+    catch(err){ console.error("GetService By Id Error:",err);
         return res.status(500).json({
             success:false,
             message:"Server Error"
@@ -163,6 +164,7 @@ export async function updateService(req,res){
           updateData.imageUrl = up.secure_url;
           updateData.imagePublicId = up.public_id || null;
           if (existing.imagePublicId) {
+            // it will delete the old image
             try {
               await deleteFromCloudinary(existing.imagePublicId);
             } catch (err) {
@@ -174,7 +176,7 @@ export async function updateService(req,res){
         console.error("Cloudinary upload error:", err);
       }
     }
-    const updated=await Service.findById(id,updateDta,{new:true,
+    const updated = await Service.findByIdAndUpdate(id,updateData,{new:true,
         runValidators:true
     });
     return res.status(200).json({

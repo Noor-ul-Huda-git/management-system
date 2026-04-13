@@ -1,5 +1,5 @@
 import express from "express";
-import upload from "../middlewares/multer.js";
+import multer from 'multer';
 import doctorAuth from "../middlewares/doctorAuth.js";
 
 import {
@@ -11,12 +11,14 @@ import {
   updateDoctor,
   deleteDoctor
 } from "../controllers/doctorController.js";
+const upload= multer({dest: "/tmp"});
 
 const doctorRouter = express.Router();
 
+
 // public routes
 doctorRouter.get("/", getDoctors);
-doctorRouter.post("/login", doctorLogin);
+doctorRouter.post('/login', doctorLogin);
 doctorRouter.get("/:id", getDoctorById);
 
 // create doctor
