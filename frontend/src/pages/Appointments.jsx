@@ -1,9 +1,12 @@
 import React from 'react'
+import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
+import AppointmentPage from '../components/AppointmentPage'
 const Appointments=()=>{
     return(
         <div>
             <Navbar/>
-            <AppointmentPage/>
+            <AppointmentPage />
             <Footer/>
 
 

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   CalendarDays,
-  Bell,
   CheckCircle,
   Clock,
   CreditCard,
@@ -12,70 +11,24 @@ import axios from "axios";
 import { useAuth, useUser } from "@clerk/clerk-react";
 import { Toaster } from "react-hot-toast";
 
-import {
-  appointmentPageStyles,
-  cardStyles,
-  badgeStyles,
-  iconSize,
-} from "../assets/frontend/dummyStyles";
+/* ✅ API Setup */
+const API_BASE =
+  import.meta.env.VITE_API_URL || "http://localhost:4000";
 
-const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:4000";
 const API = axios.create({ baseURL: API_BASE });
 
 /* ---------------- Helper Functions ---------------- */
 
-function pad(n) {
-  return String(n ?? 0).padStart(2, "0");
-}
-
 function parseDateTime(dateStr, timeStr) {
-  const fast = new Date(`${dateStr} ${timeStr}`);
-  if (!isNaN(fast)) return fast;
-
-  const parts = (dateStr || "").split(" ");
-  if (parts.length === 3) {
-    const [d, m, y] = parts;
-    const months = {
-      Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
-      Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11,
-    };
-    const month = months[m];
-
-    let [t, ampm] = (timeStr || "").split(" ");
-    let [hh, mm] = (t || "0:00").split(":");
-
-    hh = Number(hh || 0);
-    mm = Number(mm || 0);
-
-    if (ampm === "PM" && hh !== 12) hh += 12;
-    if (ampm === "AM" && hh === 12) hh = 0;
-
-    return new Date(Number(y), month, Number(d), hh, mm);
-  }
-
-  const iso = new Date(dateStr);
-  if (!isNaN(iso)) return iso;
-
-  return new Date();
+  const dt = new Date(`${dateStr} ${timeStr}`);
+  return isNaN(dt) ? new Date() : dt;
 }
 
 function computeStatus(item) {
   const now = new Date();
+
   if (!item) return "Pending";
-
   if (item.status === "Canceled") return "Canceled";
-
-  if (item.status === "Rescheduled") {
-    if (item.rescheduledTo?.date && item.rescheduledTo?.time) {
-      const dt = parseDateTime(
-        item.rescheduledTo.date,
-        item.rescheduledTo.time
-      );
-      if (now >= dt) return "Completed";
-    }
-    return "Rescheduled";
-  }
-
   if (item.status === "Completed") return "Completed";
 
   const dt = parseDateTime(item.date, item.time);
@@ -86,50 +39,34 @@ function computeStatus(item) {
 
 /* ---------------- UI Components ---------------- */
 
-const PaymentBadge = ({ payment }) => {
-  return payment === "Online" ? (
-    <span className={badgeStyles.paymentBadge.online}>
-      <CreditCard className={iconSize.small} /> Online
-    </span>
-  ) : (
-    <span className={badgeStyles.paymentBadge.cash}>
-      <Wallet className={iconSize.small} /> Cash
-    </span>
-  );
-};
+const PaymentBadge = ({ payment }) => (
+  <span className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm ${
+    payment === "Online"
+      ? "bg-green-100 text-green-600"
+      : "bg-yellow-100 text-yellow-600"
+  }`}>
+    {payment === "Online" ? <CreditCard size={14} /> : <Wallet size={14} />}
+    {payment}
+  </span>
+);
 
-const StatusBadge = ({ itemStatus }) => {
-  if (itemStatus === "Completed")
-    return (
-      <span className={badgeStyles.statusBadge.completed}>
-        <CheckCircle className={iconSize.small} /> Completed
-      </span>
-    );
+const StatusBadge = ({ status }) => {
+  const styles = {
+    Completed: "bg-green-100 text-green-600",
+    Pending: "bg-blue-100 text-blue-600",
+    Canceled: "bg-red-100 text-red-600",
+  };
 
-  if (itemStatus === "Confirmed")
-    return (
-      <span className={badgeStyles.statusBadge.confirmed}>
-        <Bell className={iconSize.small} /> Confirmed
-      </span>
-    );
-
-  if (itemStatus === "Pending")
-    return (
-      <span className={badgeStyles.statusBadge.pending}>
-        <Clock className={iconSize.small} /> Pending
-      </span>
-    );
-
-  if (itemStatus === "Canceled")
-    return (
-      <span className={badgeStyles.statusBadge.canceled}>
-        <XCircle className={iconSize.small} /> Canceled
-      </span>
-    );
+  const icons = {
+    Completed: <CheckCircle size={14} />,
+    Pending: <Clock size={14} />,
+    Canceled: <XCircle size={14} />,
+  };
 
   return (
-    <span className={badgeStyles.statusBadge.default}>
-      <CalendarDays className={iconSize.small} /> Rescheduled
+    <span className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm ${styles[status] || "bg-gray-100 text-gray-600"}`}>
+      {icons[status] || <CalendarDays size={14} />}
+      {status}
     </span>
   );
 };
@@ -140,67 +77,63 @@ const AppointmentPage = () => {
   const { isLoaded, getToken } = useAuth();
   const { user } = useUser();
 
-  const [loadingDoctors, setLoadingDoctors] = useState(false);
-  const [loadingServices, setLoadingServices] = useState(false);
-
   const [doctorAppts, setDoctorAppts] = useState([]);
   const [serviceAppts, setServiceAppts] = useState([]);
+
+  const [loadingDoctors, setLoadingDoctors] = useState(false);
+  const [loadingServices, setLoadingServices] = useState(false);
 
   /* -------- API Calls -------- */
 
   const loadDoctorAppointments = useCallback(async () => {
-    if (!isLoaded) return;
-    setLoadingDoctors(true);
+    if (!isLoaded || !user) return;
 
+    setLoadingDoctors(true);
     try {
       const token = await getToken();
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
       const resp = await API.get("/api/appointments/me", { headers });
-      const arr = resp?.data?.appointments || [];
-
-      setDoctorAppts(Array.isArray(arr) ? arr : []);
+      setDoctorAppts(resp?.data?.appointments || []);
     } catch (err) {
       console.error(err);
       setDoctorAppts([]);
     } finally {
       setLoadingDoctors(false);
     }
-  }, [isLoaded, getToken]);
+  }, [isLoaded, user]);
 
   const loadServiceAppointments = useCallback(async () => {
-    if (!isLoaded) return;
-    setLoadingServices(true);
+    if (!isLoaded || !user) return;
 
+    setLoadingServices(true);
     try {
       const token = await getToken();
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
       const resp = await API.get("/api/service-appointments/me", { headers });
-      const arr = resp?.data?.appointments || [];
-
-      setServiceAppts(Array.isArray(arr) ? arr : []);
+      setServiceAppts(resp?.data?.appointments || []);
     } catch (err) {
       console.error(err);
       setServiceAppts([]);
     } finally {
       setLoadingServices(false);
     }
-  }, [isLoaded, getToken]);
+  }, [isLoaded, user]);
 
   useEffect(() => {
     loadDoctorAppointments();
     loadServiceAppointments();
-  }, [loadDoctorAppointments, loadServiceAppointments]);
+  }, []);
 
-  /* -------- Data Mapping -------- */
+  /* -------- Mapping -------- */
 
-  const appointmentData = useMemo(() => {
+  const doctorData = useMemo(() => {
     return doctorAppts.map((a) => ({
-      id: a._id || a.id || Math.random(),
-      doctor: a.doctorName || "Doctor",
-      date: a.date || "",
-      time: a.time || "",
+      id: a._id,
+      doctor: a.doctorName,
+      date: a.date,
+      time: a.time,
       payment: a?.payment?.method || "Cash",
       status: computeStatus(a),
     }));
@@ -208,11 +141,11 @@ const AppointmentPage = () => {
 
   const serviceData = useMemo(() => {
     return serviceAppts.map((s) => ({
-      id: s._id || s.id || Math.random(),
-      name: s.serviceName || "Service",
-      price: s.price || 0,
-      date: s.date || "",
-      time: s.time || "",
+      id: s._id,
+      name: s.serviceName,
+      price: s.price,
+      date: s.date,
+      time: s.time,
       payment: s?.payment?.method || "Cash",
       status: computeStatus(s),
     }));
@@ -221,45 +154,82 @@ const AppointmentPage = () => {
   /* -------- UI -------- */
 
   return (
-    <div className={appointmentPageStyles.pageContainer}>
-      <Toaster position="top-right" />
+    <div className="min-h-screen bg-green-50 flex flex-col items-center py-10 px-4">
 
-      <h1 className={appointmentPageStyles.doctorTitle}>
+      <Toaster />
+
+      {/* Doctor Section */}
+      <h1 className="text-3xl font-bold text-green-800 mb-4">
         Your Doctor Appointments
       </h1>
 
-      {loadingDoctors && <p>Loading Doctors...</p>}
-      {!loadingDoctors && appointmentData.length === 0 && (
-        <p>No Doctor Appointments</p>
+      {loadingDoctors ? (
+        <p>Loading...</p>
+      ) : doctorData.length === 0 ? (
+        <p className="text-gray-600 mb-10">
+          No doctor appointments found.
+        </p>
+      ) : (
+        <div className="grid gap-4 w-full max-w-3xl">
+          {doctorData.map((item) => (
+            <div key={item.id} className="bg-white p-5 rounded-xl shadow-md flex justify-between items-center">
+
+              <div>
+                <h2 className="font-semibold text-lg">{item.doctor}</h2>
+                <p className="flex items-center gap-2 text-sm text-gray-600">
+                  <CalendarDays size={14} /> {item.date}
+                </p>
+                <p className="flex items-center gap-2 text-sm text-gray-600">
+                  <Clock size={14} /> {item.time}
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-2 items-end">
+                <PaymentBadge payment={item.payment} />
+                <StatusBadge status={item.status} />
+              </div>
+
+            </div>
+          ))}
+        </div>
       )}
 
-      {appointmentData.map((item) => (
-        <div key={item.id} className={cardStyles.doctorCard}>
-          <h2>{item.doctor}</h2>
-          <p><CalendarDays /> {item.date}</p>
-          <p><Clock /> {item.time}</p>
-          <PaymentBadge payment={item.payment} />
-          <StatusBadge itemStatus={item.status} />
+      {/* Services Section */}
+      <h1 className="text-3xl font-bold text-blue-700 mt-16 mb-4">
+        Your Booked Services
+      </h1>
+
+      {loadingServices ? (
+        <p>Loading...</p>
+      ) : serviceData.length === 0 ? (
+        <p className="text-blue-600">
+          No service bookings found.
+        </p>
+      ) : (
+        <div className="grid gap-4 w-full max-w-3xl">
+          {serviceData.map((srv) => (
+            <div key={srv.id} className="bg-white p-5 rounded-xl shadow-md flex justify-between items-center">
+
+              <div>
+                <h2 className="font-semibold text-lg">{srv.name}</h2>
+                <p className="text-sm text-gray-600">PKR {srv.price}</p>
+                <p className="flex items-center gap-2 text-sm text-gray-600">
+                  <CalendarDays size={14} /> {srv.date}
+                </p>
+                <p className="flex items-center gap-2 text-sm text-gray-600">
+                  <Clock size={14} /> {srv.time}
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-2 items-end">
+                <PaymentBadge payment={srv.payment} />
+                <StatusBadge status={srv.status} />
+              </div>
+
+            </div>
+          ))}
         </div>
-      ))}
-
-      <h2>Your Services</h2>
-
-      {loadingServices && <p>Loading Services...</p>}
-      {!loadingServices && serviceData.length === 0 && (
-        <p>No Services Found</p>
       )}
-
-      {serviceData.map((srv) => (
-        <div key={srv.id} className={cardStyles.serviceCard}>
-          <h3>{srv.name}</h3>
-          <p>PKR {srv.price}</p>
-          <p><CalendarDays /> {srv.date}</p>
-          <p><Clock /> {srv.time}</p>
-          <PaymentBadge payment={srv.payment} />
-          <StatusBadge itemStatus={srv.status} />
-        </div>
-      ))}
     </div>
   );
 };

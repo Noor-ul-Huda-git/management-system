@@ -3,9 +3,9 @@ import Navbar from '../components/Navbar'
 const DashboardPage =()=>{
     return(
         <div>
-<Navbar/>
+<Navbar/> 
 <Dashboard/>
         </div>
     )
 }
-export default Home
+export default DashboardPage;

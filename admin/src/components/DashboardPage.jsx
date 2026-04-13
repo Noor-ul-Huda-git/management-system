@@ -88,314 +88,28 @@ function normalizeDoctor(doc) {
  
 
 const DashboardPage =()=>{
-    const [doctors,setDoctors]=useState([]);
-     const [loading,setLoading]=useState(false);
-      const [error,setError]=useState(null);
-    //   new patient count
-     const [patientCount,setPatientCount]=useState(null);
-      const [patientCountLoading,setPatientCountLoading]=useState(false);
-       const [query,setQuery]=useState(" ");
-        const [showAll,setShowAll]=useState(false);
-        // to load doctors from ther server
-         useEffect(() => {
-    let mounted = true;
-    async function loadDoctors() {
-      setLoading(true);
-      setError(null);
-      try {
-        const url = `${API_BASE}/api/doctors?limit=200`;
-        const res = await fetch(url);
-        if (!res.ok) {
-          const body = await res.json().catch(() => ({}));
-          throw new Error(
-            body?.message || `Failed to fetch doctors (${res.status})`
-          );
-        }
-        const body = await res.json();
-        let list = [];
-        if (Array.isArray(body)) list = body;
-        else if (Array.isArray(body.doctors)) list = body.doctors;
-        else if (Array.isArray(body.data)) list = body.data;
-        else if (Array.isArray(body.items)) list = body.items;
-        else {
-          const firstArray = Object.values(body).find((v) => Array.isArray(v));
-          if (firstArray) list = firstArray;
-        }
-        const normalized = list.map((d) => normalizeDoctor(d));
-        if (mounted) setDoctors(normalized);
-      } catch (err) {
-        console.error("Failed to load doctors:", err);
-        if (mounted) {
-          setError(err.message || "Failed to load doctors");
-          setDoctors([]);
-        }
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    }
-    loadDoctors();
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  return (
+    <div className={s.container}>
+      <div className={s.maxWidthContainer}>
+        <div className={s.headerContainer}>
+          <div>
+            <h1 className={s.headerTitle}>Dashboard</h1>
+            <p className={s.headerSubtitle}>
+              Welcome back! Here's an overview of your hospital's performance.</p>
+          
+          </div>
+          </div>
+          
+          
+          
+          </div>
 
-  useEffect(() => {
-    let mounted = true;
-    async function loadPatientCount() {
-      setPatientCountLoading(true);
-      try {
-        const res = await fetch(PATIENT_COUNT_API);
-        if (!res.ok) {
-          console.warn("Patient count fetch failed:", res.status);
-          if (mounted) setPatientCount(0);
-          return;
-        }
+    </div>
 
-        const body = await res.json().catch(() => ({}));
-        const count = Number(
-          body?.count ?? body?.totalUsers ?? body?.data ?? 0
-        );
-        if (mounted) setPatientCount(isNaN(count) ? 0 : count);
-      } catch (err) {
-        console.error("Failed to fetch patient count:", err);
-        if (mounted) setPatientCount(0);
-      } finally {
-        if (mounted) setPatientCountLoading(false);
-      }
-    }
-    loadPatientCount();
-    return () => {
-      mounted = false;
-    };
-  }, []);
-// to derive the totals
-  const totals = useMemo(() => {
-    const totalDoctors = doctors.length;
-    const totalAppointments = doctors.reduce(
-      (s, d) => s + safeNumber(d.appointments?.total, 0),
-      0
-    );
-    const totalEarnings = doctors.reduce(
-      (s, d) => s + safeNumber(d.earnings, 0),
-      0
-    );
-    const completed = doctors.reduce(
-      (s, d) => s + safeNumber(d.appointments?.completed, 0),
-      0
-    );
-    const canceled = doctors.reduce(
-      (s, d) => s + safeNumber(d.appointments?.canceled, 0),
-      0
-    );
-    const totalLoginPatients =
-      doctors.reduce((s, d) => s + (d.raw?.loginPatientsCount ?? 0), 0) || 0;
-    return {
-      totalDoctors,
-      totalAppointments,
-      totalEarnings,
-      completed,
-      canceled,
-      totalLoginPatients,
-    };
-  }, [doctors]);
-//   to filter the doctors
-   const filteredDoctors = useMemo(() => {
-    if (!query) return doctors;
-    const q = query.trim().toLowerCase();
-    const qNum = Number(q);
-    return doctors.filter((d) => {
-      if (d.name.toLowerCase().includes(q)) return true;
-      if ((d.specialization || "").toLowerCase().includes(q)) return true;
-      if (d.fee.toString().includes(q)) return true;
-      if (!Number.isNaN(qNum) && d.fee <= qNum) return true;
-      return false;
-    });
-  }, [doctors, query]);
-    const INITIAL_COUNT = 8;
-  const visibleDoctors = showAll
-    ? filteredDoctors
-    : filteredDoctors.slice(0, INITIAL_COUNT);
+  )
     
-
-    return(
-        <div className={s.pageContainer}>
-            <div className={s.maxWidthContainer}>
-                <div className={s.headerContainer}>
-                    <div>
-                    <h1 className={s.headerTitleContainer}>
-                        DASHBOARD
-                    </h1>
-                    <p className={s.headerSubtitle}>
-                        OverView of Doctors And Appointments.
-                    </p>
-                </div>
-
-                </div>
-                {/* Stats Section */}
-                <div className={s.statsGrid}>
-                    <StatCard icon={<Users className="w-6 h-6"/>}
-                    label="Total Doctors" value={totals.taotalDoctor}/>
-                    
-                     
-                    <StatCard icon={<userRoundCheck className="w-6 h-6"/>}
-                    label="Total Registered Users" value={patientCountLoading ? "Loading..."
-                        :(patientCount ?? totals.totalLoginpatient)
-                    }/>
-
-                    
-                    <StatCard icon={<Calendarrange className="w-6 h-6"/>}
-                    label="Total Appointments" 
-                    value={totals.totalAppointments}/>
-
-                    
-                    <StatCard icon={<BadgePakistanRupee className="w-6 h-6"/>}
-                    label="Total earnings" 
-                    value={`rs ${totals,totalEarnings.toLocaleString()}`}/>
-
-                   
-                    <StatCard icon={<checkCircle className="w-6 h-6"/>}
-                    label="Completed" 
-                    value={totals.completed}/>
-
-                  
-                    <StatCard icon={<Xcircle className="w-6 h-6"/>}
-                    label="Canceled" 
-                    value={totals.totalCanceled}/>
-              </div>
-              <div className="mb-6">
-                <label className={s.searchLabel}>
-                    Search Doctors </label>
-                    <div className={s.searchContainer}>
-                        <div className={s.searchInputContainer}>
-                            <input value={query} onChange={(e)=> setQuery(e.target.value)}
-                            className={s.searchInput}
-                            placeholder="Search name/ Specialization/fee"/>
-                            <search className={s.searchIcon}/>
-                      </div>
-                      <button onClick={()=>{
-                        setQuery(" ");
-                        setShowAll(false);
-                      }} className={s.clearButton + " "+s.cursorPointer}> 
-                      clear
-                    </button>
-
-                    </div>
-
-              </div>
-              <diV className={s.tableContainer}>
-                <div className={s.tableheader}>
-                    <h2 className={s.tableTitle}>
-                        Doctors
-                   </h2>
-                   <p className={s.tableCount}>
-                    {loading ? "loading.."
-                    : `Showing ${visibleDoctors.length} of ${filteredDoctors.length}`}
-                   </p>
-
-                </div> 
-                {error &&(
-                  <div className={s.errorContainer}>
-                    Error Loading Doctors: {error}
-                  </div>
-                )}
-                <div  className={s.tableWrapper}>
-                  <table  className={s.table}>
-                    <thead  className={s.tableHead}>
-                       <tr>
-                  <th className={s.tableHeaderCell}>Doctor</th>
-                  <th className={s.tableHeaderCell}>Specialization</th>
-                  <th className={s.tableHeaderCell}>Fee</th>
-                  <th className={s.tableHeaderCell}>Appointments</th>
-                  <th className={s.tableHeaderCell}>Completed</th>
-                  <th className={s.tableHeaderCell}>Canceled</th>
-                  <th className={s.tableHeaderCell}>Total Earnings</th>
-                </tr>
-
-                    </thead>
-                      <tbody className={s.tableBody}>
-                {visibleDoctors.map((d, idx) => (
-                  <tr
-                    key={d.id}
-                    className={s.tableRow + " " + 
-                      (idx % 2 === 0 ? s.tableRowEven : s.tableRowOdd)}
-                  >
-                    <td className={s.tableCell + " " + s.tableCellFlex}>
-                      <div className={s.verticalLine} />
-                      <img
-                        src={d.image}
-                        alt={d.name}
-                        className={s.doctorImage}
-                      />
-                      <div>
-                        <div className={s.doctorName}>
-                          {d.name}
-                        </div>
-                        <div className={s.doctorId}>
-                          ID: {d.id}
-                        </div>
-                      </div>
-                    </td>
-
-                    <td className={s.tableCell + " " + s.doctorSpecialization}>
-                      {d.specialization}
-                    </td>
-
-                    <td className={s.tableCell + " " + s.feeText}>
-                      ₹ {d.fee}
-                    </td>
-
-                    <td className={s.tableCell + " " + s.appointmentsText}>
-                      {d.appointments.total}
-                    </td>
-
-                    <td className={s.tableCell + " " + s.completedText}>
-                      {d.appointments.completed}
-                    </td>
-
-                    <td className={s.tableCell + " " + s.canceledText}>
-                      {d.appointments.canceled}
-                    </td>
-
-                    <td className={s.tableCell + " " + s.earningsText}>
-                      ₹ {d.earnings.toLocaleString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-        
-
-                  </table>
-                </div >
-                <div className={s.mobileDoctorContainer}>
-                  <div className={s.mobileDoctorGrid}>
-                    {visibleDoctors.map((d)=>{
-                      <MobileDoctorCard key={d.id} d={d}/>
-                    })}
-
-                  </div>
-
-                </div>
-                {filteredDoctors.length> INITIAL_COUNT &&(
-                  <div className={s.showMoreContainer}>
-                    <button onClick={()=>
-                      setShowAll((s) =>!s)
-                    } className={s.showMoreButton+" "+s.cursorPointer}>
-                      {
-                        showAll ? "Show less" : `Show more(${filteredDoctors.length-INITIAL_COUNT})`
-                      }
-                    </button>
-
-                  </div>
-                )}
-
-              </diV>
-
-            </div>
-
-        </div>
-    );
-};
 export default DashBoardPage;
+
 function StatCard ({icon,label,value}){
     return(
         <div className={s.statCard}>
@@ -404,14 +118,8 @@ function StatCard ({icon,label,value}){
                     {icon}
                 </div>
                 <div className="flex-1">
-                    <div className={s.statLabel}>
-                        {label}
-
-                    </div>
-                    <div className={s.statValue}>
-                        {value}
-                   </div>
-
+                    <div className={s.statLabel}>{label}</div>
+                    <div className={s.statValue}>{value}</div>
 
                 </div>
 

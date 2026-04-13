@@ -1,5 +1,5 @@
 import React from "react";
-import {doctorListStyles} from '../assets/frontend/dummyStyles';
+import {doctorDetailStyles} from '../assets/frontend/dummyStyles';
 // Helper Function
 function formatDateISO(iso) {
   if (!iso || typeof iso !== "string") return iso;

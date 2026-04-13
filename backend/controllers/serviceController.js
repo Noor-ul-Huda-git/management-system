@@ -1,7 +1,7 @@
 import Service from "../models/Service.js";
 import {uploadToCloudinary,deleteFromCloudinary} from "../utils/cloudinary.js";
 // Helpers Function
-const parseJsonArrayField = (field) => {
+export const parseJsonArrayField = (field) => {
   if (!field) return [];
   if (Array.isArray(field)) return field;
   if (typeof field === "string") {
@@ -97,22 +97,22 @@ export async function createService(req,res){
     }
 }
 // get All the services
-export async function getServices(req, res) {
-  try {
-    const list = await Service.find().sort({ createdAt: -1 }).lean();
-
-    return res.status(200).json({
-      success: true,
-      data: list
-    });
-
-  } catch (err) {
-    console.error("GetServices Error:", err);
-    return res.status(500).json({
-      success: false,
-      message: "Server Error"
-    });
-  }
+export async function getServices(req,res){
+    try{
+        const list=await Service.find().sort({createdAt:-1}).lean();
+        return res.status(200).json({
+            sucess:false,
+            data:list
+        });
+    }
+    catch(err){
+        console.error("CreateService Error:",err);
+        return res.status(500).json({
+            success:false,
+            message:"Server Error"
+        });
+    }
+    
 }
 
 // to get service by Id

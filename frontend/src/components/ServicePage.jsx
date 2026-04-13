@@ -105,8 +105,8 @@ const ServiceCard = ({ service }) => {
   );
 };
 
-const ServicePage =(previewCount=9999)=>{
-      const API_BASE = "http://localhost:4000";
+const ServicePage = ({ previewCount = 9999 }) => {
+        const API_BASE = "http://localhost:4000";
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -189,27 +189,27 @@ const ServicePage =(previewCount=9999)=>{
                 )}
                 {loading ?(
                     <section className={servicePageStyles.skeletonGrid}>
-                        {Array.from({length:8}).map((_,i)=>(
-                        <div key={1} className={servicePageStyles.skeletonCard}>
-                            <div className={servicePageStyles.skeletonImage}> </div>
-                            <div className={servicePageStyles.skeletonText1}> </div>
-                           < div className={servicePageStyles.skeletonText2}> </div>
-                           < div className={servicePageStyles.skeletonButton}> </div>
-
-                        </div>
-                    ))}
-                    </section>
+  {Array.from({ length: 8 }).map((_, i) => (
+    <div key={i} className={servicePageStyles.skeletonCard}>
+      <div className={servicePageStyles.skeletonImage}></div>
+      <div className={servicePageStyles.skeletonText1}></div>
+      <div className={servicePageStyles.skeletonText2}></div>
+      <div className={servicePageStyles.skeletonButton}></div>
+    </div>
+  ))}
+</section>
                 ):(
-                    <section className={servicePageStyles.servicesGrid}> 
-                    {shown.length>0 ?(
-                        shown.map((s)=><ServiceCard key={s.id||s.name}service={s}/>)
-                    ):(
-                        <div className={servicePageStyles.emptyState}> 
-                            No Service Availablity
-                        </div>
-                    )}
-
-                    </section>
+                    <section className={servicePageStyles.servicesGrid}>
+  {shown.length > 0 ? (
+    shown.map((s, index) => (
+      <ServiceCard key={s._id || index} service={s} />
+    ))
+  ) : (
+    <div className={servicePageStyles.emptyState}>
+      No Service Availability
+    </div>
+  )}
+</section>
                 )}
 
             </div>
@@ -217,4 +217,4 @@ const ServicePage =(previewCount=9999)=>{
         </div>
     );
 };
-export default SrvicePage;
+export default ServicePage;

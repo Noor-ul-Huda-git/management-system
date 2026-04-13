@@ -9,4 +9,4 @@ const ServiceAppointments = ()=>{
         </div>
     )
 }
-export default ServiceAppointmentPage
+export default ServiceAppointments

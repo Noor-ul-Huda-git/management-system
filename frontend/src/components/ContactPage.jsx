@@ -1,9 +1,17 @@
-import React from 'react'
-import { contactPageStyles } from '../assets/frontend/dummyStyles';
-import { Stethoscope,Mail,MapPin,MessageSquare,Phone,SendHorizonal,User } from 'lucide-react';
+import React, { useState } from "react";
+import { contactPageStyles } from "../assets/frontend/dummyStyles";
+import {
+  Stethoscope,
+  Mail,
+  MapPin,
+  MessageSquare,
+  Phone,
+  SendHorizontal,
+  User,
+} from "lucide-react";
 
-const ContactPage =()=>{
-     const initial = {
+const ContactPage = () => {
+  const initial = {
     name: "",
     email: "",
     phone: "",
@@ -38,7 +46,11 @@ const ContactPage =()=>{
       "Stress Test",
       "Heart Consultation",
     ],
-    Orthopedics: ["Fracture Care", "Joint Pain Consultation", "Physiotherapy"],
+    Orthopedics: [
+      "Fracture Care",
+      "Joint Pain Consultation",
+      "Physiotherapy",
+    ],
     Dermatology: ["Skin Consultation", "Allergy Test", "Acne Treatment"],
     Pediatrics: ["Child Checkup", "Vaccination (Child)", "Growth Monitoring"],
     Gynecology: ["Antenatal Care", "Pap Smear", "Ultrasound"],
@@ -56,10 +68,13 @@ const ContactPage =()=>{
 
   function validate() {
     const e = {};
+
     if (!form.name.trim()) e.name = "Full name is required";
+
     if (!form.email.trim()) e.email = "Email is required";
     else if (!/^\S+@\S+\.\S+$/.test(form.email))
       e.email = "Enter a valid email";
+
     if (!form.phone.trim()) e.phone = "Phone number is required";
     else if (!/^[0-9]{10}$/.test(form.phone))
       e.phone = "Phone number must be exactly 10 digits";
@@ -70,12 +85,14 @@ const ContactPage =()=>{
     }
 
     if (!form.message.trim()) e.message = "Please write a short message";
+
     setErrors(e);
     return Object.keys(e).length === 0;
   }
 
   function handleChange(e) {
     const { name, value } = e.target;
+
     if (name === "department") {
       setForm((prev) => ({ ...prev, department: value, service: "" }));
     } else {
@@ -83,22 +100,6 @@ const ContactPage =()=>{
     }
 
     setErrors((prev) => ({ ...prev, [name]: undefined }));
-
-    if (name === "department" || name === "service") {
-      setErrors((prev) => {
-        const copy = { ...prev };
-        if (
-          (name === "department" && value) ||
-          (name === "service" && value) ||
-          form.department ||
-          form.service
-        ) {
-          delete copy.department;
-          delete copy.service;
-        }
-        return copy;
-      });
-    }
   }
 
   function handleSubmit(e) {
@@ -123,50 +124,68 @@ const ContactPage =()=>{
   const availableServices = form.department
     ? servicesMapping[form.department] || []
     : genericServices;
-    return(
-        <div className={contactPageStyles.pageContainer}>
-            <div className={contactPageStyles.bgAccent1}> </div>
-            <div className={contactPageStyles.bgAccent2}> </div>
-            <div className={contactPageStyles.gridContainer}>
-                <div className={contactPageStyles.formContainer}>
-                 <h2 className={contactPageStyles.formTitle}>
-                    Contact Our Clinic
-                 </h2>
-                 <p className={contactPageStyles.formSubtitle}>
-                    Fill the Form we will Open Whatsapp so you can contact with us.
-                 </p>
-                 <form onSubmit={handleSubmit} className={contactPageStyles.formSpace}>
-                    <div className={contactPageStyles.formgrid}>
-                  <div>
-                    <label className={contactPageStyles.label}>
-                      <User size={16}/>Full Name
-                    </label>
-                    <input name="name"
-                    type="name"
-                    value={form.name}
-                    onChange={handleChange}
-                    placeholder="Full name"
-                    className={contactPageStyles.input}/>
-                    {errors.name &&(
-                        <p className={contactPageStyles.error}>{errors.name}</p>
-                    )}
-                    </div>
-                     <div>
-                    <label className={contactPageStyles.label}>
-                      <Mail size={16}/>Email
-                    </label>
-                    <input name="Email"
-                    type="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    placeholder="ex@gmail.com"
-                    className={contactPageStyles.input}/>
-                    {errors.email &&(
-                        <p className={contactPageStyles.error}>{errors.email}</p>
-                    )}
-                    </div>
-                    </div>
-                      //Phone + Department
+
+  return (
+    <div className={contactPageStyles.pageContainer}>
+      <div className={contactPageStyles.bgAccent1}></div>
+      <div className={contactPageStyles.bgAccent2}></div>
+
+      <div className={contactPageStyles.gridContainer}>
+        {/* LEFT FORM */}
+        <div className={contactPageStyles.formContainer}>
+          <h2 className={contactPageStyles.formTitle}>
+            Contact Our Clinic
+          </h2>
+
+          <p className={contactPageStyles.formSubtitle}>
+            Fill the form and we will open WhatsApp for you.
+          </p>
+
+          <form
+            onSubmit={handleSubmit}
+            className={contactPageStyles.formSpace}
+          >
+            {/* Name + Email */}
+            <div className={contactPageStyles.formgrid}>
+              <div>
+                <label className={contactPageStyles.label}>
+                  <User size={16} /> Full Name
+                </label>
+                <input
+                  name="name"
+                  value={form.name}
+                  onChange={handleChange}
+                  placeholder="Full name"
+                  className={contactPageStyles.input}
+                />
+                {errors.name && (
+                  <p className={contactPageStyles.error}>
+                    {errors.name}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className={contactPageStyles.label}>
+                  <Mail size={16} /> Email
+                </label>
+                <input
+                  name="email"
+                  type="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  placeholder="example@gmail.com"
+                  className={contactPageStyles.input}
+                />
+                {errors.email && (
+                  <p className={contactPageStyles.error}>
+                    {errors.email}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Phone + Department */}
             <div className={contactPageStyles.formGrid}>
               <div>
                 <label className={contactPageStyles.label}>
@@ -180,10 +199,11 @@ const ContactPage =()=>{
                   placeholder="1234567890"
                   className={contactPageStyles.input}
                   maxLength="10"
-                  aria-invalid={!!errors.phone}
                 />
                 {errors.phone && (
-                  <p className={contactPageStyles.error}>{errors.phone}</p>
+                  <p className={contactPageStyles.error}>
+                    {errors.phone}
+                  </p>
                 )}
               </div>
 
@@ -211,84 +231,110 @@ const ContactPage =()=>{
                 )}
               </div>
             </div>
-               <div>
-                <label className={contactPageStyles.label}>
-                    <Stethoscope size={16}/>Service</label>
-                    <select name="service" value={form.service} onChange={handleChange}
-                    className={contactPageStyles.input}>
-                        <option value=" ">
-                            Select Service
-                        </option>
-                        {availableServices.map((s)=>(
-                            <option key={s} value={s}>{s}</option>
-                        ))}
-                    </select>
-                     {errors.service && (
-                  <p className={contactPageStyles.error}>
-                    {errors.service}
-                  </p>
-                )}
-               </div>
-               <div>
-                <label className={contactPageStyles.label} >
-                <MessageSquare size={16}/>
-                Message </label>
-                <textarea name="message" value={form.message}
-                onChange={handleChange} placeholder="Describe your concern briefly.."
-                rows={4} className={contactPageStylestextarea}/>
-                {errors.service && (
-                  <p className={contactPageStyles.error}>
-                    {errors.message}
-                  </p>
-                )}
-               </div>
-               <div className={contactPageStyles.buttonContainer}>
-                <button type="submit" className={contactPageStyles.button} >
-                    <SendHorizontal size={18}/><span>Send via Whatsapp</span>
-                </button>
-                {sent &&(
-                    <p className={contactPageStyles.sentMessage}> 
-                    Opening Whatsapp and Clearing form...
-                    </p>
-                )}
 
-               </div>
-                 </form>
-                </div>
-                {/* right Side */}
-                <div className={contactPageStyles.infoContainer}>
-                    <div className={contactPageStyles.infoCard}>
-                        <h3> className={contactPageStyles.infoTitle}Visit Our Clinic</h3>
-                        <p className={contactPageStyles.infoText}>
-                            House of Elaan, kreators GulbergGreens </p>
-                            <p className={contactPageStyles.infoItem}>
-                                <phone size={16}/> 0519988510 </p>
-                                <p className={contactPageStyles.infoItem}>
-                                    <Mail size={16}/>info@gmail.com
-                                </p>
+            {/* Service */}
+            <div>
+              <label className={contactPageStyles.label}>
+                <Stethoscope size={16} /> Service
+              </label>
+              <select
+                name="service"
+                value={form.service}
+                onChange={handleChange}
+                className={contactPageStyles.input}
+              >
+                <option value="">Select Service</option>
+                {availableServices.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+              {errors.service && (
+                <p className={contactPageStyles.error}>
+                  {errors.service}
+                </p>
+              )}
+            </div>
 
-                    </div>
-                      <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3559.460792853461!2d80.98709187529213!3d26.870382662861033!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x399be2ae3cea2421%3A0x6c0de12e8a77818f!2sGomti%20Nagar%2C%20Lucknow%2C%20Uttar%20Pradesh!5e0!3m2!1sen!2sin!4v1731769000000!5m2!1sen!2sin"
-            className={contactPageStyles.map}
-            title="Gomti Nagar Map"
-            loading="lazy"
-            allowFullScreen
-          ></iframe>
-          <div className={contactPageStyles.hoursContainer}>
-            <h4> className={contactPageStyles.hoursTitle}
-                Clinic Hours </h4>
-                <p className={contactPageStyles.hoursText}>
-                    Mon-Sat : 9:00 AM-6:00 PM </p>
+            {/* Message */}
+            <div>
+              <label className={contactPageStyles.label}>
+                <MessageSquare size={16} /> Message
+              </label>
+              <textarea
+                name="message"
+                value={form.message}
+                onChange={handleChange}
+                placeholder="Describe your concern briefly..."
+                rows={4}
+                className={contactPageStyles.textarea}
+              />
+              {errors.message && (
+                <p className={contactPageStyles.error}>
+                  {errors.message}
+                </p>
+              )}
+            </div>
 
+            {/* Button */}
+            <div className={contactPageStyles.buttonContainer}>
+              <button
+                type="submit"
+                className={contactPageStyles.button}
+              >
+                <SendHorizontal size={18} />
+                <span>Send via WhatsApp</span>
+              </button>
+
+              {sent && (
+                <p className={contactPageStyles.sentMessage}>
+                  Opening WhatsApp...
+                </p>
+              )}
+            </div>
+          </form>
+        </div>
+
+        {/* RIGHT SIDE */}
+        <div className={contactPageStyles.infoContainer}>
+          <div className={contactPageStyles.infoCard}>
+            <h3 className={contactPageStyles.infoTitle}>
+              Visit Our Clinic
+            </h3>
+
+            <p className={contactPageStyles.infoText}>
+              House of Elaan, Gulberg Greens
+            </p>
+
+            <p className={contactPageStyles.infoItem}>
+              <Phone size={16} /> 0519988510
+            </p>
+
+            <p className={contactPageStyles.infoItem}>
+              <Mail size={16} /> info@gmail.com
+            </p>
           </div>
 
-                </div>
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18..."
+            className={contactPageStyles.map}
+            title="Map"
+            loading="lazy"
+          ></iframe>
 
-            </div>
-            <style className={contactPageStyles.animationKeyframes}></style>
-
+          <div className={contactPageStyles.hoursContainer}>
+            <h4 className={contactPageStyles.hoursTitle}>
+              Clinic Hours
+            </h4>
+            <p className={contactPageStyles.hoursText}>
+              Mon-Sat: 9:00 AM - 6:00 PM
+            </p>
+          </div>
         </div>
-    )
-}
+      </div>
+    </div>
+  );
+};
+
 export default ContactPage;
